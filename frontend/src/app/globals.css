@@ -1,0 +1,25 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 20px;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d0021a;
+  border-radius: 20px;
+}
+
+/* Override default focus outlines globally for HeroUI and browser defaults */
+input:focus,
+[data-focus='true'],
+[data-focus-visible='true'],
+[data-focused='true'] {
+  outline: none;
+}

@@ -1,0 +1,26 @@
+  Determinando los proyectos que se van a restaurar...
+  Todos los proyectos est├ín actualizados para la restauraci├│n.
+  Profedex.Domain -> D:\Esalu\04_Proyectos_Programacion\nest\001_silerio\project\profedex\backend-academic\Profedex.Domain\bin\Debug\net10.0\Profedex.Domain.dll
+  Profedex.Application -> D:\Esalu\04_Proyectos_Programacion\nest\001_silerio\project\profedex\backend-academic\Profedex.Application\bin\Debug\net10.0\Profedex.Application.dll
+  Profedex.Infrastructure -> D:\Esalu\04_Proyectos_Programacion\nest\001_silerio\project\profedex\backend-academic\Profedex.Infrastructure\bin\Debug\net10.0\Profedex.Infrastructure.dll
+  Profedex.IntegrationTests -> D:\Esalu\04_Proyectos_Programacion\nest\001_silerio\project\profedex\backend-academic\Profedex.IntegrationTests\bin\Debug\net10.0\Profedex.IntegrationTests.dll
+Serie de pruebas para D:\Esalu\04_Proyectos_Programacion\nest\001_silerio\project\profedex\backend-academic\Profedex.IntegrationTests\bin\Debug\net10.0\Profedex.IntegrationTests.dll (.NETCoreApp,Version=v10.0)
+Versi├│n 18.0.1 (x64) de VSTest
+
+  Profedex.API -> D:\Esalu\04_Proyectos_Programacion\nest\001_silerio\project\profedex\backend-academic\Profedex.API\bin\Debug\net10.0\Profedex.API.dll
+Iniciando la ejecuci├│n de pruebas, espere...
+1 archivos de prueba en total coincidieron con el patr├│n especificado.
+  Profedex.UnitTests -> D:\Esalu\04_Proyectos_Programacion\nest\001_silerio\project\profedex\backend-academic\Profedex.UnitTests\bin\Debug\net10.0\Profedex.UnitTests.dll
+Serie de pruebas para D:\Esalu\04_Proyectos_Programacion\nest\001_silerio\project\profedex\backend-academic\Profedex.UnitTests\bin\Debug\net10.0\Profedex.UnitTests.dll (.NETCoreApp,Version=v10.0)
+Versi├│n 18.0.1 (x64) de VSTest
+
+Iniciando la ejecuci├│n de pruebas, espere...
+1 archivos de prueba en total coincidieron con el patr├│n especificado.
+
+Correctas! - Con error:     0, Superado:    16, Omitido:     0, Total:    16, Duraci├│n: 921 ms - Profedex.IntegrationTests.dll (net10.0)
+
+Correctas! - Con error:     0, Superado:    51, Omitido:     0, Total:    51, Duraci├│n: 162 ms - Profedex.UnitTests.dll (net10.0)
+
+Datos adjuntos:
+  D:\Esalu\04_Proyectos_Programacion\nest\001_silerio\project\profedex\backend-academic\Profedex.UnitTests\TestResults\43ef24f0-7a83-428c-898d-5d3281306323\coverage.cobertura.xml
+  D:\Esalu\04_Proyectos_Programacion\nest\001_silerio\project\profedex\backend-academic\Profedex.IntegrationTests\TestResults\a4998f96-dfc5-4725-addf-d4fa61784879\coverage.cobertura.xml

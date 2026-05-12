@@ -1,0 +1,120 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("TURSO_PRISMA_URL")
+}
+
+
+model User {
+  id String @id @default(uuid())
+  email String @unique
+  username String @unique
+  password String
+  numControl String @unique
+  carrera String
+  banned Boolean @default(false)
+  bannings Bannings?
+  role String @default("USER")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  reviews Review[]
+  likes Like[]
+  adminProfile Administrator?
+}
+
+model Administrator {
+  id          String   @id @default(uuid())
+  userId      String   @unique
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pinSiit     String?   @unique
+  nivelAdmin  Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+
+
+model Teacher {
+  id Int @id @default(autoincrement())
+  nombre String
+  apellidoPaterno String
+  apellidoMaterno String
+  shortname String @unique
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  reviews Review[]
+}
+
+model Review {
+  id Int @id @default(autoincrement())
+  teacherId Int
+  userId String
+  body String
+  rating Int
+  difficulty Int
+  wouldTakeAgain Boolean
+  learningLevel Int
+  published Boolean @default(true)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  teacher Teacher @relation(fields: [teacherId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+  likes Like[]
+  materia Materias @relation(fields: [materiaId], references: [id])
+  materiaId Int
+}
+
+model Like {
+  id Int @id @default(autoincrement())
+  reviewId Int
+  userId String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  review Review @relation(fields: [reviewId], references: [id])
+  user User @relation(fields: [userId], references: [id])
+}
+
+model Materias {
+  id Int @id @default(autoincrement())
+  nombre String
+  carrera String
+  reviews Review[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([nombre, carrera])
+}
+
+model PasswordResetToken {
+  id String @id @default(cuid())
+  email String
+  token String @unique
+  expires DateTime
+
+  @@unique([email, token])
+}
+
+model Events {
+  id Int @id @default(autoincrement())
+  title String
+  body String
+  startDate DateTime
+  endDate DateTime?
+  createdAt DateTime @default(now())
+}
+
+model Bannings {
+  id        String    @id @default(uuid())
+  userId    String    @unique
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reason    String
+  duration  DateTime?
+  createdAt DateTime  @default(now())
+}

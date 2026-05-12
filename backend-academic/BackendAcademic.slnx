@@ -1,0 +1,8 @@
+<Solution>
+  <Project Path="Profedex.API/Profedex.API.csproj" />
+  <Project Path="Profedex.Application/Profedex.Application.csproj" />
+  <Project Path="Profedex.Domain/Profedex.Domain.csproj" />
+  <Project Path="Profedex.Infrastructure/Profedex.Infrastructure.csproj" />
+  <Project Path="Profedex.IntegrationTests/Profedex.IntegrationTests.csproj" />
+  <Project Path="Profedex.UnitTests/Profedex.UnitTests.csproj" />
+</Solution>

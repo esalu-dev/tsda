@@ -1,0 +1,23 @@
+.main {
+  display: grid;
+  grid-template-areas:
+    'info comments'
+    'stats comments';
+  grid-template-columns: 4fr 7fr;
+  grid-template-rows: 1fr 1fr;
+  height: 100dvh;
+  padding: 30px;
+  gap: 30px;
+}
+
+@media screen and (max-width: 1280px) {
+  .main {
+    grid-template-areas:
+      'info'
+      'stats'
+      'comments';
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr 1fr 1fr;
+    padding: 12px;
+  }
+}

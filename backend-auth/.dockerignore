@@ -1,0 +1,12 @@
+node_modules
+dist
+coverage
+.git
+*.db
+.env
+.env.local
+# No copiar los clientes Prisma generados localmente.
+# El Dockerfile corre 'prisma generate' dentro del container,
+# y 'COPY . .' no debe pisar esos archivos con los locales
+# (pueden diferir en OS/versión y causar errores de módulo en runtime).
+generated

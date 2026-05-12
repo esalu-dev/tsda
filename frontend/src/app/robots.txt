@@ -1,0 +1,7 @@
+User-Agent: *
+Allow: /
+Allow: /privacy
+Allow: /terms
+Allow: /auth/login
+Allow: /auth/register
+Disallow: /app/

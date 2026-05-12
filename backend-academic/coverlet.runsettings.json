@@ -1,0 +1,7 @@
+{
+  "exclude": [
+    "[Profedex.API]Program",
+    "[Profedex.Infrastructure]Profedex.Infrastructure.Class1",
+    "[*]Profedex.Infrastructure.Migrations.*"
+  ]
+}

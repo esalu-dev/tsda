@@ -1,0 +1,45 @@
+.main {
+  display: grid;
+  grid-template-areas: 'aside main';
+  grid-template-columns: 260px 1fr;
+  max-height: 100dvh;
+}
+
+.inicio {
+  display: grid;
+  grid-template-areas:
+    'stats stats'
+    'stats stats'
+    'days days'
+    'calendar calendar'
+    'calendar calendar'
+    'update update'
+    'update update';
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: 200px 200px 300px 200px 200px 150px 150px;
+  gap: 20px;
+}
+
+@media screen and (min-width: 641px) {
+  .inicio {
+    grid-template-areas:
+      'stats stats stats stats'
+      'days days calendar calendar'
+      'days days calendar calendar'
+      'update update update update';
+    grid-template-columns: 1fr 1fr 1fr 1fr;
+    grid-template-rows: 200px 160px 160px 300px;
+    padding-bottom: 20px;
+  }
+}
+
+@media screen and (max-width: 640px) {
+  .main {
+    grid-template-areas:
+      'main'
+      'aside';
+    grid-template-columns: 1fr;
+    grid-template-rows: 1fr auto;
+    row-gap: 10px;
+  }
+}

@@ -1,0 +1,162 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: profedex-postgres
+    networks:
+      - profedex-net
+    environment:
+      POSTGRES_USER: profedex
+      POSTGRES_PASSWORD: profedex_secret
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+      - ./init-db.sql:/docker-entrypoint-initdb.d/init-db.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U profedex"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  mysql:
+    image: mysql:8.0
+    container_name: profedex-mysql
+    command: --log_bin_trust_function_creators=1
+    networks:
+      - profedex-net
+    environment:
+      MYSQL_ROOT_PASSWORD: root_password
+      MYSQL_DATABASE: profedex
+      MYSQL_USER: profedex
+      MYSQL_PASSWORD: profedex_secret
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql-data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  symmetricds:
+    build:
+      context: ./symmetricds
+      dockerfile: Dockerfile
+    container_name: profedex-replication
+    networks:
+      - profedex-net
+    hostname: symmetricds
+    stop_grace_period: 3m
+    ports:
+      - "31415:31415"
+    volumes:
+      - ./symmetricds/engines:/opt/symmetric-ds/engines
+      - ./symmetricds/init:/opt/symmetric-ds/init
+      - ./symmetricds/entrypoint.sh:/opt/symmetric-ds/entrypoint.sh
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+      backend-auth:
+        condition: service_started
+
+  backend-auth:
+    build:
+      context: ./backend-auth
+      dockerfile: Dockerfile
+    container_name: profedex-auth
+    networks:
+      - profedex-net
+    ports:
+      - "3001:3001"
+    environment:
+      JWT_SECRET: "xoQdH/yp4tvDl7pCtRgqpHXjG/f+0sCVrm/0hjTV0OQ="
+      PORT: "3001"
+      # Read DB (PostgreSQL)
+      DATABASE_URL_PG: "postgresql://profedex:profedex_secret@postgres:5432/profedex"
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: profedex
+      POSTGRES_PASSWORD: profedex_secret
+      POSTGRES_READ_DB: auth_read
+      REPLICA_MYSQL_URL: "mysql://profedex:profedex_secret@mysql:3306/profedex"
+    volumes:
+      - auth-events:/app/event-store
+    depends_on:
+      postgres:
+        condition: service_healthy
+      mysql:
+        condition: service_healthy
+
+  backend-academic:
+    build:
+      context: ./backend-academic
+      dockerfile: Dockerfile
+    container_name: profedex-academic
+    networks:
+      - profedex-net
+    ports:
+      - "5000:8080"
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ASPNETCORE_URLS: "http://+:8080"
+      ConnectionStrings__WriteDb: "Data Source=/app/data/profedex.db"
+      ConnectionStrings__EventStore: "Data Source=/app/data/academic_events.db"
+      ConnectionStrings__ReadDb: "Host=postgres;Port=5432;Database=academic_read;Username=profedex;Password=profedex_secret"
+      Jwt__SecretKey: "xoQdH/yp4tvDl7pCtRgqpHXjG/f+0sCVrm/0hjTV0OQ="
+    volumes:
+      - academic-data:/app/data
+
+  backend-worker:
+    build:
+      context: ./backend-worker
+      dockerfile: Dockerfile
+    container_name: profedex-worker
+    networks:
+      - profedex-net
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: "5432"
+      POSTGRES_USER: profedex
+      POSTGRES_PASSWORD: profedex_secret
+      POSTGRES_DB: profedex
+    depends_on:
+      postgres:
+        condition: service_healthy
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    container_name: profedex-frontend
+    networks:
+      - profedex-net
+    ports:
+      - "3000:3000"
+    environment:
+      BACKEND_AUTH_URL: "http://backend-auth:3001"
+      BACKEND_SERVER_URL: "http://backend-auth:3001"
+      BACKEND_ACADEMIC_URL: "http://backend-academic:8080"
+      NEXTAUTH_SECRET: "xoQdH/yp4tvDl7pCtRgqpHXjG/f+0sCVrm/0hjTV0OQ="
+      RESEND_API_KEY: "re_Foa4N6kZ_N1VGVAMihMeKqkrMod6nN2yc"
+      TURSO_DATABASE_URL: 'libsql://dev-esalu-dev.turso.io'
+      TURSO_AUTH_TOKEN: "eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3Mjk4NzY3MjEsImlkIjoiZTg4Yzk4NzctYjE4MS00YjhjLTljNGMtZTc5NDhkMzBkMGE2In0.WHb8LWoAcs4351JvRMyVN9oGoUW7JuljBsUvEI1amH5-poVaJ3RIN0sHX72rFvbIHc91qMtHwatTcEVmqCPsAw"
+      DATABASE_URL: 'postgresql://postgres123:postgres123@database-test.ctage4uokarx.us-east-2.rds.amazonaws.com:5432/postgres?sslmode=require'
+      TURSO_PRISMA_URL: "libsql://dev-esalu-dev.turso.io?authToken=eyJhbGciOiJFZERTQSIsInR5cCI6IkpXVCJ9.eyJhIjoicnciLCJpYXQiOjE3Mjk4NzY3MjEsImlkIjoiZTg4Yzk4NzctYjE4MS00YjhjLTljNGMtZTc5NDhkMzBkMGE2In0.WHb8LWoAcs4351JvRMyVN9oGoUW7JuljBsUvEI1amH5-poVaJ3RIN0sHX72rFvbIHc91qMtHwatTcEVmqCPsAw"
+      APP_ENV: "development"
+      AUTH_TRUST_HOST: "true"
+    depends_on:
+      - backend-auth
+      - backend-academic
+
+networks:
+  profedex-net:
+    driver: bridge
+
+volumes:
+  postgres-data:
+  mysql-data:
+  auth-events:
+  academic-data:

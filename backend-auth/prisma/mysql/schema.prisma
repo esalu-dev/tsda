@@ -1,0 +1,62 @@
+// Prisma schema for MySQL read replica
+// This schema mirrors the PostgreSQL schema but targets MySQL
+// SymmetricDS handles data replication from PostgreSQL → MySQL
+
+generator client {
+  provider     = "prisma-client"
+  output       = "../../generated/prisma-mysql"
+  moduleFormat = "cjs"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id            String         @id @default(uuid()) @db.VarChar(36)
+  email         String         @unique @db.VarChar(255)
+  username      String         @unique @db.VarChar(255)
+  password      String         @db.VarChar(255)
+  numControl    String         @unique @db.VarChar(255)
+  carrera       String         @db.VarChar(255)
+  role          String         @default("USER") @db.VarChar(50)
+  createdAt     DateTime       @default(now())
+  updatedAt     DateTime       @updatedAt
+  
+  // Relaciones
+  bannings      Bannings?
+  adminProfile  Administrator?
+  userSessions UserSession[]
+}
+model Administrator {
+  id          String   @id @default(uuid()) @db.VarChar(36)
+  userId      String   @unique @db.VarChar(36)
+  user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  pinSiit     String?  @unique @db.VarChar(255)
+  nivelAdmin  Int      @default(1)
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+}
+model Bannings {
+  id        String    @id @default(uuid()) @db.VarChar(36)
+  userId    String    @unique @db.VarChar(36)
+  user      User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  reason    String    @db.Text
+  duration  DateTime?
+  createdAt DateTime  @default(now())
+}
+model PasswordResetToken {
+  id      String   @id @default(cuid()) @db.VarChar(36)
+  email   String   @db.VarChar(255)
+  token   String   @unique @db.VarChar(255)
+  expires DateTime
+  @@unique([email, token])
+}
+model UserSession {
+  id String @id @default(uuid()) @db.VarChar(36)
+  userId String @db.VarChar(36)
+  refreshToken String @unique @db.VarChar(500)
+  expiresAt DateTime
+  createdAt DateTime @default(now())
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
